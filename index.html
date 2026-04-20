@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImpulsaProd</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">IP</div>
+            <div>
+                <div class="logo-title">ImpulsaProd</div>
+                <div class="logo-sub">Panel de gestión</div>
+            </div>
+        </div>
+        <nav class="nav">
+            <a href="index.html" class="nav-item active">
+                <span class="nav-icon">📊</span> Dashboard
+            </a>
+            <a href="productos.html" class="nav-item">
+                <span class="nav-icon">📦</span> Productos
+            </a>
+            <a href="ventas.html" class="nav-item">
+                <span class="nav-icon">💰</span> Ventas
+            </a>
+            <a href="creditos.html" class="nav-item">
+                <span class="nav-icon">📋</span> Créditos
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="avatar">PC</div>
+            <div>
+                <div class="user-name">Paula Cañon</div>
+                <div class="user-role">Administrador</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div>
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-sub">Bienvenido a ImpulsaProd</p>
+            </div>
+            <div class="topbar-actions">
+                <span class="fecha" id="fecha"></span>
+                <button class="btn-primary" onclick="window.location='ventas.html'">
+                    + Nueva Venta
+                </button>
+            </div>
+        </div>
+
+        <!-- TARJETAS DE RESUMEN -->
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon" style="background:#eeedfe;">
+                    <span style="font-size:20px;">💰</span>
+                </div>
+                <div class="card-label">Total ventas</div>
+                <div class="card-value">$847.500</div>
+                <div class="card-badge badge-green">+12% este mes</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:#e1f5ee;">
+                    <span style="font-size:20px;">📦</span>
+                </div>
+                <div class="card-label">Productos activos</div>
+                <div class="card-value">24</div>
+                <div class="card-badge badge-amber">3 con stock bajo</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:#faeeda;">
+                    <span style="font-size:20px;">📋</span>
+                </div>
+                <div class="card-label">Créditos pendientes</div>
+                <div class="card-value">$215.000</div>
+                <div class="card-badge badge-red">2 por vencer</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:#e1f5ee;">
+                    <span style="font-size:20px;">📈</span>
+                </div>
+                <div class="card-label">Ganancias netas</div>
+                <div class="card-value">$312.000</div>
+                <div class="card-badge badge-green">Este mes</div>
+            </div>
+        </div>
+
+        <!-- TABLA DE INVENTARIO -->
+        <div class="table-wrap">
+            <div class="table-header">
+                <h2 class="table-title">Inventario de productos</h2>
+                <input class="search" type="text" placeholder="🔍 Buscar producto..."
+                    onkeyup="filtrarTabla(this.value)">
+            </div>
+            <table id="tablaProductos">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Stock</th>
+                        <th>P. Venta</th>
+                        <th>Ganancia</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                    <!-- Los datos se cargan desde app.js -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

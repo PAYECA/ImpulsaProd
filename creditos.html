@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImpulsaProd — Créditos</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">IP</div>
+            <div>
+                <div class="logo-title">ImpulsaProd</div>
+                <div class="logo-sub">Panel de gestión</div>
+            </div>
+        </div>
+        <nav class="nav">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">📊</span> Dashboard
+            </a>
+            <a href="productos.html" class="nav-item">
+                <span class="nav-icon">📦</span> Productos
+            </a>
+            <a href="ventas.html" class="nav-item">
+                <span class="nav-icon">💰</span> Ventas
+            </a>
+            <a href="creditos.html" class="nav-item active">
+                <span class="nav-icon">📋</span> Créditos
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="avatar">PC</div>
+            <div>
+                <div class="user-name">Paula Cañon</div>
+                <div class="user-role">Administrador</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+
+        <div class="topbar">
+            <div>
+                <h1 class="page-title">Créditos</h1>
+                <p class="page-sub">Gestiona los créditos y pagos pendientes</p>
+            </div>
+        </div>
+
+        <!-- TARJETAS RESUMEN CRÉDITOS -->
+        <div class="cards-grid" style="grid-template-columns: repeat(3,1fr);">
+            <div class="card">
+                <div class="card-icon" style="background:#faeeda;">
+                    <span style="font-size:20px;">⏳</span>
+                </div>
+                <div class="card-label">Créditos pendientes</div>
+                <div class="card-value" id="total-pendientes">0</div>
+                <div class="card-badge badge-amber">Por cobrar</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:#e1f5ee;">
+                    <span style="font-size:20px;">✅</span>
+                </div>
+                <div class="card-label">Créditos pagados</div>
+                <div class="card-value" id="total-pagados">0</div>
+                <div class="card-badge badge-green">Completados</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:#fcebeb;">
+                    <span style="font-size:20px;">💵</span>
+                </div>
+                <div class="card-label">Total por cobrar</div>
+                <div class="card-value" id="monto-pendiente">$0</div>
+                <div class="card-badge badge-red">Saldo pendiente</div>
+            </div>
+        </div>
+
+        <!-- TABLA DE CRÉDITOS -->
+        <div class="table-wrap">
+            <div class="table-header">
+                <h2 class="table-title">📋 Créditos registrados</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Total venta</th>
+                        <th>Pagado</th>
+                        <th>Pendiente</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-creditos"></tbody>
+            </table>
+        </div>
+
+        <!-- FORMULARIO REGISTRAR PAGO -->
+        <div class="form-wrap" id="form-pago" style="display:none;">
+            <h2 class="form-title">💳 Registrar pago</h2>
+            <div id="alerta-pago" class="alert" style="display:none;"></div>
+            <div class="form-grid" style="grid-template-columns: repeat(2,1fr);">
+                <div class="form-group">
+                    <label>Crédito seleccionado</label>
+                    <input type="text" id="pago-credito-info" readonly
+                        style="background:#f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label>Monto a pagar ($)</label>
+                    <input type="number" id="pago-monto" placeholder="0" min="1">
+                </div>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button class="btn-primary" onclick="procesarPago()">
+                    ✅ Confirmar pago
+                </button>
+                <button class="btn-secondary" onclick="cerrarFormPago()">
+                    ✖️ Cancelar
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let creditoSeleccionado = null;
+
+        function cargarCreditosCompleto() {
+            const tbody = document.getElementById("cuerpo-creditos");
+            tbody.innerHTML = "";
+
+            if (creditos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8"
+                    style="text-align:center;color:#888;padding:30px;">
+                    No hay créditos registrados. Las ventas a crédito
+                    aparecerán aquí.</td></tr>`;
+                return;
+            }
+
+            creditos.forEach((c, index) => {
+                const pendiente = c.total - c.pagado;
+                const badge = c.estado === "PAGADO"
+                    ? '<span class="card-badge badge-green">PAGADO</span>'
+                    : '<span class="card-badge badge-amber">PENDIENTE</span>';
+                const boton = c.estado !== "PAGADO"
+                    ? `<button class="btn-primary"
+                        style="padding:6px 12px; font-size:12px;"
+                        onclick="abrirFormPago(${index})">
+                        💳 Registrar pago
+                       </button>`
+                    : '<span style="color:#888;font-size:12px;">Completado</span>';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${c.id}</strong></td>
+                        <td>${c.cliente}</td>
+                        <td>${c.producto}</td>
+                        <td>$${c.total.toLocaleString("es-CO")}</td>
+                        <td style="color:#3b6d11;">
+                            $${c.pagado.toLocaleString("es-CO")}</td>
+                        <td style="color:#a32d2d;">
+                            $${pendiente.toLocaleString("es-CO")}</td>
+                        <td>${badge}</td>
+                        <td>${boton}</td>
+                    </tr>`;
+            });
+
+            actualizarResumen();
+        }
+
+        function actualizarResumen() {
+            const pendientes = creditos.filter(c => c.estado !== "PAGADO").length;
+            const pagados    = creditos.filter(c => c.estado === "PAGADO").length;
+            const monto      = creditos.reduce((sum, c) => sum + (c.total - c.pagado), 0);
+
+            document.getElementById("total-pendientes").textContent = pendientes;
+            document.getElementById("total-pagados").textContent = pagados;
+            document.getElementById("monto-pendiente").textContent =
+                "$" + monto.toLocaleString("es-CO");
+        }
+
+        function abrirFormPago(index) {
+            creditoSeleccionado = index;
+            const c = creditos[index];
+            const pendiente = c.total - c.pagado;
+            document.getElementById("pago-credito-info").value =
+                `${c.id} — ${c.cliente} | Pendiente: $${pendiente.toLocaleString("es-CO")}`;
+            document.getElementById("pago-monto").value = "";
+            document.getElementById("form-pago").style.display = "block";
+            document.getElementById("form-pago").scrollIntoView(
+                { behavior: "smooth" });
+        }
+
+        function cerrarFormPago() {
+            document.getElementById("form-pago").style.display = "none";
+            creditoSeleccionado = null;
+        }
+
+        function procesarPago() {
+            if (creditoSeleccionado === null) return;
+            const monto = parseFloat(document.getElementById("pago-monto").value);
+            const c = creditos[creditoSeleccionado];
+            const pendiente = c.total - c.pagado;
+
+            if (isNaN(monto) || monto <= 0) {
+                mostrarAlerta("alerta-pago",
+                    "❌ Ingresa un monto válido.", "error");
+                return;
+            }
+            if (monto > pendiente) {
+                mostrarAlerta("alerta-pago",
+                    `❌ El monto supera el saldo pendiente ($${
+                    pendiente.toLocaleString("es-CO")}).`, "error");
+                return;
+            }
+
+            c.pagado += monto;
+            if (c.pagado >= c.total) {
+                c.estado = "PAGADO";
+                c.pagado = c.total;
+            }
+
+            mostrarAlerta("alerta-pago",
+                `✅ Pago de $${monto.toLocaleString("es-CO")} registrado.`,
+                "success");
+
+            setTimeout(() => {
+                cerrarFormPago();
+                cargarCreditosCompleto();
+            }, 1500);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarCreditosCompleto();
+        });
+    </script>
+</body>
+</html>
